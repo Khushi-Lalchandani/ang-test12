@@ -5,19 +5,14 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {
-  CdkDragDrop,
-  CdkDragEnd,
-  CdkDragStart,
-  moveItemInArray,
-} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragStart } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements AfterViewInit {
   components = [
     { id: 1, type: 'input', label: 'Text Input' },
     { id: 2, type: 'image', src: '../assets/imgs/london.jpg' },
@@ -28,11 +23,16 @@ export class AppComponent implements OnInit, AfterViewInit {
       options: ['None', 'Option 1', 'Option 2', 'Option 3'],
     },
   ];
-
+  dropZoneItems: any[] = []; // New array to store items in drop zone
+  newItem!: HTMLElement;
   title = 'test12';
   clone!: HTMLElement | null;
   originalElement!: HTMLElement;
+
+  draggedItem: any = null;
+
   @ViewChild('timeContainer') timeContainer!: ElementRef;
+  currentTime!: string;
   originalPosition: {
     left: number;
     top: number;
@@ -65,27 +65,47 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.timeContainer.nativeElement.innerHTML = currentTime;
     }, 1000);
   }
-  ngOnInit(): void {}
+
   onDragStart($event: CdkDragStart) {
-    this.originalElement = $event.source.getRootElement();
-    this.clone = this.originalElement.cloneNode(true) as HTMLElement;
-  }
-  onDragEnd($event: CdkDragEnd) {}
-
-  onDrop($event: CdkDragDrop<any[]>) {
-    // console.log($event);
+    this.draggedItem = $event.source.data;
   }
 
-  getCurrentTime() {
-    return new Date().toLocaleTimeString();
+  onDrop($event: CdkDragDrop<any>): void {
+    if (this.draggedItem) {
+      const event = $event.event as MouseEvent | TouchEvent;
+      let clientX = 0;
+      let clientY = 0;
+
+      if (event instanceof MouseEvent) {
+        clientX = event.clientX;
+        clientY = event.clientY;
+      } else if (event instanceof TouchEvent) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      }
+
+      const dropPosition = {
+        left: clientX - $event.item.element.nativeElement.offsetWidth / 2,
+        top: clientY - $event.item.element.nativeElement.offsetHeight / 2,
+      };
+
+      this.dropZoneItems.push({
+        ...this.draggedItem,
+        position: dropPosition,
+      });
+    }
+    console.log(this.dropZoneItems);
   }
-  private getPosition(element: HTMLElement) {
-    const rect = element.getBoundingClientRect();
-    return {
-      left: rect.left,
-      top: rect.top,
-      right: rect.right,
-      bottom: rect.bottom,
-    };
+
+  drag($event: CdkDragStart) {
+    console.log($event);
+  }
+
+  isItemInDropZone(item: any): boolean {
+    return this.dropZoneItems.some(
+      (droppedItem) =>
+        droppedItem.id === item.id &&
+        (droppedItem.type === 'clock' || droppedItem.type === 'image')
+    );
   }
 }

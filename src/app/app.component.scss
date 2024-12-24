@@ -6,25 +6,18 @@
 
   &_part1 {
     width: 65%;
-
     padding-right: 1rem;
     border-right: 1px solid #000;
     display: grid;
     grid-template-rows: max-content 1fr;
   }
   &_part2 {
-    position: relative;
-
     padding-left: 1rem;
     display: grid;
     grid-template-rows: max-content 1fr;
   }
 }
-.textbox-clone {
-  border: 2px dashed red;
-  background-color: rgba(255, 0, 0, 0.1);
-  padding: 10px;
-}
+
 .fields {
   display: flex;
   flex-direction: column;
@@ -58,7 +51,7 @@
     }
     &-time {
       background-color: #eef;
-      width: 100%;
+      width: auto;
       text-align: center;
       padding: 1.2rem;
       border-radius: 10px;
@@ -69,7 +62,7 @@
     }
     &-input {
       padding: 1rem;
-      width: 100%;
+      width: auto;
       outline: none;
       border: 1px solid #aaa;
       border-radius: 12px;
@@ -84,11 +77,9 @@
   border-radius: 2.4rem;
   background-color: #000;
 
+  overflow: hidden;
   padding: 2.4rem 1.2rem;
-
-  &_dropzone {
-    height: 100%;
-    background-color: #eef;
-    border-radius: 0.5rem;
-  }
+}
+.cdk-drag-disabled {
+  cursor: not-allowed;
 }
