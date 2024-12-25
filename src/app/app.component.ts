@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { CdkDragDrop, CdkDragStart } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -32,6 +26,7 @@ export class AppComponent implements AfterViewInit {
   draggedItem: any = null;
 
   @ViewChild('timeContainer') timeContainer!: ElementRef;
+  @ViewChild('dropzone') dropzone!: any;
   currentTime!: string;
   originalPosition: {
     left: number;
@@ -79,28 +74,31 @@ export class AppComponent implements AfterViewInit {
       if (event instanceof MouseEvent) {
         clientX = event.clientX;
         clientY = event.clientY;
-      } else if (event instanceof TouchEvent) {
-        clientX = event.touches[0].clientX;
-        clientY = event.touches[0].clientY;
       }
 
       const dropPosition = {
         left: clientX - $event.item.element.nativeElement.offsetWidth / 2,
         top: clientY - $event.item.element.nativeElement.offsetHeight / 2,
       };
+      const dropZoneBounds =
+        this.dropzone?.nativeElement.getBoundingClientRect();
+      const draggedItemElement = $event.item.element.nativeElement;
+      const itemWidth = draggedItemElement.offsetWidth;
+      const itemHeight = draggedItemElement.offsetHeight;
 
-      this.dropZoneItems.push({
-        ...this.draggedItem,
-        position: dropPosition,
-      });
+      if (
+        dropPosition.left >= dropZoneBounds.left &&
+        dropPosition.left + itemWidth <= dropZoneBounds.right &&
+        dropPosition.top >= dropZoneBounds.top &&
+        dropPosition.top + itemHeight <= dropZoneBounds.bottom
+      ) {
+        this.dropZoneItems.push({
+          ...this.draggedItem,
+          position: dropPosition,
+        });
+      }
     }
-    console.log(this.dropZoneItems);
   }
-
-  drag($event: CdkDragStart) {
-    console.log($event);
-  }
-
   isItemInDropZone(item: any): boolean {
     return this.dropZoneItems.some(
       (droppedItem) =>
