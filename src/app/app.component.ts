@@ -97,6 +97,7 @@ export class AppComponent implements AfterViewInit {
           position: dropPosition,
         });
       }
+      console.log(this.dropZoneItems);
     }
   }
   isItemInDropZone(item: any): boolean {
