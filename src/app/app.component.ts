@@ -1,12 +1,22 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { CdkDragDrop, CdkDragStart } from '@angular/cdk/drag-drop';
+import { findIndex } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnChanges {
   components = [
     { id: 1, type: 'input', label: 'Text Input' },
     { id: 2, type: 'image', src: '../assets/imgs/london.jpg' },
@@ -17,23 +27,20 @@ export class AppComponent implements AfterViewInit {
       options: ['None', 'Option 1', 'Option 2', 'Option 3'],
     },
   ];
-  dropZoneItems: any[] = []; // New array to store items in drop zone
-  newItem!: HTMLElement;
-  title = 'test12';
-  clone!: HTMLElement | null;
-  originalElement!: HTMLElement;
+  dropZoneItems: any[] = [];
+  isAvailable: boolean = false;
+  existingItemIndex: number | undefined = undefined;
 
   draggedItem: any = null;
 
   @ViewChild('timeContainer') timeContainer!: ElementRef;
   @ViewChild('dropzone') dropzone!: any;
-  currentTime!: string;
-  originalPosition: {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-  } = { left: 0, top: 0, right: 0, bottom: 0 };
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['dropZoneItems']) {
+      console.log('Components array has changed:', this.dropZoneItems);
+    }
+  }
   ngAfterViewInit(): void {
     setInterval(() => {
       let time = new Date();
@@ -64,9 +71,23 @@ export class AppComponent implements AfterViewInit {
   onDragStart($event: CdkDragStart) {
     this.draggedItem = $event.source.data;
   }
+  onDrag($event: CdkDragStart) {
+    for (let i of $event.source.data) {
+      this.dropZoneItems.forEach((item, index) => {
+        if (item.id === i.id) {
+          this.isAvailable = true;
+          this.existingItemIndex = index;
+        } else {
+          this.isAvailable = false;
+          this.existingItemIndex = -1;
+        }
+      });
+    }
+  }
 
   onDrop($event: CdkDragDrop<any>): void {
     if (this.draggedItem) {
+      // console.log(this.draggedItem.id);
       const event = $event.event as MouseEvent | TouchEvent;
       let clientX = 0;
       let clientY = 0;
@@ -92,13 +113,22 @@ export class AppComponent implements AfterViewInit {
         dropPosition.top >= dropZoneBounds.top &&
         dropPosition.top + itemHeight <= dropZoneBounds.bottom
       ) {
-        this.dropZoneItems.push({
-          ...this.draggedItem,
-          position: dropPosition,
-        });
+        if (!this.isAvailable) {
+          this.dropZoneItems.push({
+            ...this.draggedItem,
+            position: dropPosition,
+          });
+        } else {
+          this.dropZoneItems = this.dropZoneItems.map((item, index) =>
+            index === this.existingItemIndex
+              ? { ...item, position: dropPosition }
+              : item
+          );
+        }
       }
-      console.log(this.dropZoneItems);
     }
+
+    console.log(this.dropZoneItems);
   }
   isItemInDropZone(item: any): boolean {
     return this.dropZoneItems.some(
@@ -107,4 +137,5 @@ export class AppComponent implements AfterViewInit {
         (droppedItem.type === 'clock' || droppedItem.type === 'image')
     );
   }
+  constructor(private cdr: ChangeDetectorRef) {}
 }

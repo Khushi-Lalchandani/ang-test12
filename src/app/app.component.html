@@ -4,7 +4,6 @@
     <div
       class="screen"
       #dropzone
-      [ngStyle]="{ position: 'relative' }"
       cdkDropList
       [cdkDropListData]="dropZoneItems"
       [cdkDropListConnectedTo]="[fields]"
@@ -15,7 +14,7 @@
         *ngFor="let item of dropZoneItems"
         cdkDrag
         [cdkDragData]="dropZoneItems"
-        (cdkDragStarted)="onDragStart($event)"
+        (cdkDragStarted)="onDrag($event)"
         cdkDragBoundary=".screen"
         [ngStyle]="{
           position: 'absolute',
