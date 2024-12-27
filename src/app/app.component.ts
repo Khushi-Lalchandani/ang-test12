@@ -148,6 +148,9 @@ export class AppComponent implements AfterViewInit {
     if (event instanceof MouseEvent) {
       clientX = event.clientX;
       clientY = event.clientY;
+    } else if (event instanceof TouchEvent) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
     }
     return {
       left: clientX - $event.item.element.nativeElement.offsetWidth / 2,
