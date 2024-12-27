@@ -3,20 +3,17 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  OnChanges,
   OnInit,
-  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { CdkDragDrop, CdkDragStart } from '@angular/cdk/drag-drop';
-import { findIndex } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements AfterViewInit, OnChanges {
+export class AppComponent implements AfterViewInit {
   components = [
     { id: 1, type: 'input', label: 'Text Input' },
     { id: 2, type: 'image', src: '../assets/imgs/london.jpg' },
@@ -32,15 +29,11 @@ export class AppComponent implements AfterViewInit, OnChanges {
   existingItemIndex: number | undefined = undefined;
 
   draggedItem: any = null;
+  draggedItemFromDropZone: any = null;
 
   @ViewChild('timeContainer') timeContainer!: ElementRef;
   @ViewChild('dropzone') dropzone!: any;
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['dropZoneItems']) {
-      console.log('Components array has changed:', this.dropZoneItems);
-    }
-  }
   ngAfterViewInit(): void {
     setInterval(() => {
       let time = new Date();
@@ -84,28 +77,13 @@ export class AppComponent implements AfterViewInit, OnChanges {
       });
     }
   }
-
-  onDrop($event: CdkDragDrop<any>): void {
+  drop($event: any) {
     if (this.draggedItem) {
-      // console.log(this.draggedItem.id);
-      const event = $event.event as MouseEvent | TouchEvent;
-      let clientX = 0;
-      let clientY = 0;
+      const dropPosition = this.calculateDropZone($event);
+      const dropZoneBounds = this.isInDropZone($event).dropZoneBounds;
 
-      if (event instanceof MouseEvent) {
-        clientX = event.clientX;
-        clientY = event.clientY;
-      }
-
-      const dropPosition = {
-        left: clientX - $event.item.element.nativeElement.offsetWidth / 2,
-        top: clientY - $event.item.element.nativeElement.offsetHeight / 2,
-      };
-      const dropZoneBounds =
-        this.dropzone?.nativeElement.getBoundingClientRect();
-      const draggedItemElement = $event.item.element.nativeElement;
-      const itemWidth = draggedItemElement.offsetWidth;
-      const itemHeight = draggedItemElement.offsetHeight;
+      const itemWidth = this.isInDropZone($event).itemWidth;
+      const itemHeight = this.isInDropZone($event).itemHeight;
 
       if (
         dropPosition.left >= dropZoneBounds.left &&
@@ -127,9 +105,56 @@ export class AppComponent implements AfterViewInit, OnChanges {
         }
       }
     }
-
-    console.log(this.dropZoneItems);
   }
+  onDrop($event: CdkDragDrop<any>): void {
+    if (this.draggedItem) {
+      const dropPosition = this.calculateDropZone($event);
+      const dropZoneBounds = this.isInDropZone($event).dropZoneBounds;
+
+      const itemWidth = this.isInDropZone($event).itemWidth;
+      const itemHeight = this.isInDropZone($event).itemHeight;
+
+      if (
+        dropPosition.left >= dropZoneBounds.left &&
+        dropPosition.left + itemWidth <= dropZoneBounds.right &&
+        dropPosition.top >= dropZoneBounds.top &&
+        dropPosition.top + itemHeight <= dropZoneBounds.bottom
+      ) {
+        this.dropZoneItems.push({
+          ...this.draggedItem,
+          position: dropPosition,
+        });
+      }
+    }
+  }
+
+  isInDropZone($event: any) {
+    const dropZoneBounds = this.dropzone?.nativeElement.getBoundingClientRect();
+    const draggedItemElement = $event.item.element.nativeElement;
+    const itemWidth = draggedItemElement.offsetWidth;
+    const itemHeight = draggedItemElement.offsetHeight;
+    return {
+      dropZoneBounds,
+      draggedItemElement,
+      itemWidth,
+      itemHeight,
+    };
+  }
+  calculateDropZone($event: any) {
+    const event = $event.event as MouseEvent | TouchEvent;
+    let clientX = 0;
+    let clientY = 0;
+
+    if (event instanceof MouseEvent) {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+    return {
+      left: clientX - $event.item.element.nativeElement.offsetWidth / 2,
+      top: clientY - $event.item.element.nativeElement.offsetHeight / 2,
+    };
+  }
+
   isItemInDropZone(item: any): boolean {
     return this.dropZoneItems.some(
       (droppedItem) =>

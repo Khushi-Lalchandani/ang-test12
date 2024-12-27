@@ -1,14 +1,7 @@
 <div class="flex">
   <div class="flex_part1">
-    <h2>Screen</h2>
-    <div
-      class="screen"
-      #dropzone
-      cdkDropList
-      [cdkDropListData]="dropZoneItems"
-      [cdkDropListConnectedTo]="[fields]"
-      (cdkDropListDropped)="onDrop($event)"
-    >
+    <p class="main_header">Screen</p>
+    <div class="screen" #dropzone (drop)="drop($event)">
       <div
         class="fields_option"
         *ngFor="let item of dropZoneItems"
@@ -46,7 +39,7 @@
   </div>
 
   <div class="flex_part2">
-    <h2>Fields</h2>
+    <p class="main_header">Fields</p>
     <div
       class="fields"
       cdkDropList
