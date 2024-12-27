@@ -16,18 +16,18 @@
         }"
       >
         <div *ngIf="item.type === 'input'">
-          <h2>Input Field</h2>
+          <h2 class="fields_option-header">Input Field</h2>
           <input class="fields_option-input" [type]="item.type" />
         </div>
         <div *ngIf="item.type === 'image'">
           <img [src]="item.src" alt="Image" class="fields_option-img" />
         </div>
         <div *ngIf="item.type === 'clock'">
-          <h2>Time</h2>
+          <h2 class="fields_option-header">Time</h2>
           <div class="fields_option-time" #timeContainer></div>
         </div>
         <div *ngIf="item.type === 'dropdown'">
-          <h2>Dropdown</h2>
+          <h2 class="fields_option-header">Dropdown</h2>
           <select name="Options" class="fields_option-input">
             <option *ngFor="let option of item.options" [value]="option">
               {{ option }}
@@ -56,18 +56,18 @@
         (cdkDragStarted)="onDragStart($event)"
       >
         <div *ngIf="component.type === 'input'">
-          <h2>Input field</h2>
+          <h2 class="fields_option-header">Input field</h2>
           <input class="fields_option-input" [type]="component.type" />
         </div>
         <div *ngIf="component.type === 'image'">
           <img [src]="component.src" alt="Image" class="fields_option-img" />
         </div>
         <div *ngIf="component.type === 'clock'">
-          <h2>Time</h2>
+          <h2 class="fields_option-header">Time</h2>
           <div class="fields_option-time" #timeContainer></div>
         </div>
         <div *ngIf="component.type === 'dropdown'">
-          <h2>Dropdown</h2>
+          <h2 class="fields_option-header">Dropdown</h2>
           <select name="Options" class="fields_option-input">
             <option [value]="option" *ngFor="let option of component.options">
               {{ option }}

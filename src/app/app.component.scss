@@ -1,16 +1,25 @@
 .flex {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
+  display: flex;
+
   height: 100vh;
   padding: 1rem 2rem;
   width: 100%;
 
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
+  }
+
   &_part1 {
     grid-column: 1/2;
+    flex: 1;
     padding-right: 1rem;
     border-right: 1px solid #000;
     display: flex;
     flex-direction: column;
+
+    @media screen and (max-width: 800px) {
+      flex: 0 0 65%;
+    }
   }
   &_part2 {
     grid-column: 2/-1;
@@ -27,22 +36,25 @@
   gap: 2rem;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 2rem;
+  padding: 2rem 0 2rem 2rem;
 
+  &::-webkit-scrollbar {
+    display: none;
+  }
   &_option {
     box-sizing: border-box;
     padding: 1rem 2rem;
-    display: inline-block;
-    flex-direction: column;
-    width: 20rem;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+
+    width: 14rem;
     height: auto;
     background: linear-gradient(145deg, #ff9a9e 0%, #fad0c4 100%);
-
     background-color: #fff;
     border-radius: 0.5rem;
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 1rem 2rem #0000001a;
-
     cursor: move;
 
     &:hover {
@@ -56,34 +68,57 @@
     &-header {
       text-align: center;
       font-weight: 700;
-      font-size: 2rem;
+      font-size: 1.4rem;
+      margin-bottom: 0;
       letter-spacing: 1px;
     }
     &-time {
       background-color: #eef;
-      width: auto;
+
       text-align: center;
       padding: 1.2rem;
       border-radius: 10px;
-      font-size: 1.6rem;
+      font-size: 1.2rem;
       letter-spacing: 2px;
       text-transform: uppercase;
       font-weight: 800;
+      @media screen and (max-width: 500px) {
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
     }
     &-input {
       padding: 1rem;
-      width: auto;
+      width: 100%;
       outline: none;
       border: 1px solid #aaa;
       border-radius: 12px;
-      width: 100%;
+
+      @media screen and (max-width: 500px) {
+        padding: 0.6rem;
+        font-size: 1.2rem;
+      }
     }
 
     &-img {
-      height: 15rem;
+      height: 10rem;
       object-fit: cover;
       border-radius: 0.5rem;
     }
+    @media screen and (max-width: 800px) {
+      min-width: 14rem;
+    }
+    @media screen and (max-width: 500px) {
+      padding: 0.5rem 1rem;
+    }
+  }
+  @media screen and (max-width: 800px) {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  @media screen and (max-width: 500px) {
+    padding: 1rem;
   }
 }
 .screen {
@@ -93,12 +128,15 @@
   background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
   border: 2px dashed #ddd;
   border-radius: 8px;
-  padding: 2.4rem 1.2rem;
   overflow: hidden;
   transition: border-color 0.3s ease;
 
   &:hover {
     border-color: #007bff;
+  }
+
+  @media screen and (max-width: 800px) {
+    height: 100%;
   }
 }
 .cdk-drag-disabled {
@@ -109,7 +147,7 @@
   font-size: 2rem;
   font-weight: 800;
   color: #333333;
-  margin: 0;
+
   position: relative;
   letter-spacing: 1px;
 
@@ -118,5 +156,12 @@
 
   &:hover {
     cursor: pointer;
+  }
+
+  @media screen and (max-width: 800px) {
+    padding: 2rem 0 0 2rem;
+  }
+  @media screen and (max-width: 500px) {
+    font-size: 1.6rem;
   }
 }
